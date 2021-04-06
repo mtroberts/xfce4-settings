@@ -54,6 +54,7 @@
 
 /* Xfconf properties */
 #define APPLY_SCHEME_PROP    "/Schemes/Apply"
+#define AUTO_REFRESH_PROP    "/GlobalSettings/AutoRefresh"
 #define DEFAULT_SCHEME_NAME  "Default"
 #define ACTIVE_PROFILE       "/ActiveProfile"
 #define AUTO_ENABLE_PROFILES "/AutoEnableProfiles"
@@ -519,14 +520,15 @@ xfce_displays_helper_screen_on_event (GdkXEvent *xevent,
     gint                event_num;
     gint                j;
     guint               n, m, nactive = 0;
-    gboolean            found = FALSE, changed = FALSE;
+    gboolean            found = FALSE, changed = FALSE, autorefresh;
 
     if (!e)
         return GDK_FILTER_CONTINUE;
 
     event_num = e->type - helper->event_base;
 
-    if (event_num == RRScreenChangeNotify)
+    autorefresh = xfconf_channel_get_bool (helper->channel, AUTO_REFRESH_PROP, TRUE);
+    if (autorefresh && event_num == RRScreenChangeNotify)
     {
         xfsettings_dbg (XFSD_DEBUG_DISPLAYS, "RRScreenChangeNotify event received.");
 
